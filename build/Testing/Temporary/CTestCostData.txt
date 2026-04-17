@@ -1,0 +1,9 @@
+activation_code_test 4 0.00306946
+activation_code_compare_stdout 4 0.00978462
+activation_code_compare_stderr 4 0.0056792
+utils_test 4 0.000429509
+bpp_segments_test 4 0.000931675
+bpp_segments_compare_stdout 4 0.00805379
+bpp_segments_compare_stderr 4 0.00524793
+test_ipa_buf 1 0.00120219
+---
