@@ -27,6 +27,8 @@ add_library(libipa STATIC
   es10c_get_eid.c
   es10c_get_prfle_info.c
   es10x.c
+  es9p_auth_clnt.c
+  es9p_get_bnd_prfle_pkg.c
   esipa_auth_clnt.c
   esipa.c
   esipa_cancel_session.c
@@ -40,7 +42,9 @@ add_library(libipa STATIC
   log.c
   proc_cmn_cancel_sess.c
   proc_cmn_mtl_auth.c
+  proc_direct_prfle_dwnld.c
   proc_indirect_prfle_dwnld.c
+  proc_eim_pkg_inject.c
   proc_eim_pkg_retr.c
   proc_euicc_data_req.c
   proc_euicc_pkg_dwnld_exec.c

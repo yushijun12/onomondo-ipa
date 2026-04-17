@@ -1,47 +1,60 @@
 ```
-# CMake build artifacts
+# Build artifacts
 build/
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
-Makefile
-CTestTestfile.cmake
-DartConfiguration.tcl
-
-# Compiled objects and executables
 *.o
 *.obj
-*.out
-*.exe
-*.dll
-*.so
 *.a
+*.so
+*.dll
+*.exe
+*.out
 
-# Test executables
-build/tests/*/activation_code_test
-build/tests/*/bpp_segments_test
-build/tests/*/test_ipa_buf
-build/tests/*/utils_test
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
 
-# Temporary and log files
-*.tmp
+# Dependencies
+*.so
+*.dylib
+*.dll
+
+# Logs
 *.log
+
+# Temporary files
+*.tmp
 *.swp
 *.swo
 
-# IDE and editor files
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# OS specific files
-.DS_Store
-Thumbs.db
-
-# Coverage reports
+# Coverage
 coverage/
 htmlcov/
+.coverage
 
-# Compressed archives
+# Python specific (if applicable)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg-info/
+.eggs/
+
+# Compression artifacts
 *.zip
 *.gz
 *.tar
@@ -64,5 +77,4 @@ htmlcov/
 *.tar.bz2
 *.tar.xz
 *.tar.zst
-
 ```
