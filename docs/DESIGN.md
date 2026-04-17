@@ -185,9 +185,23 @@ struct ipa_nvstate {
 
 ### 3.2 ESIPA 协议层 (esipa.c)
 
-ESIPA 是 IPAd 与 eIM 之间的通信协议，基于 HTTP/HTTPS，使用 ASN.1 编码。
+ESIPA 是 IPAd 与 eIM 之间的通信协议，支持 HTTP/HTTPS 和 CoAP 两种传输方式。
 
-#### 3.2.1 消息类型
+#### 3.2.1 通讯方式对比
+
+| 特性 | HTTP/HTTPS | CoAP/DTLS |
+|------|-----------|-----------|
+| 规范版本 | SGP.32 v1.0+ | SGP.32 v1.2+ 推荐 |
+| 传输层 | TCP | UDP/TCP |
+| 加密方式 | TLS | DTLS/TLS |
+| 头部开销 | ~500 字节 | ~20 字节 |
+| RAM 占用 | 高 | 低 |
+| Flash 占用 | 高 (libcurl) | 低 (libcoap) |
+| 连接保持 | Keep-Alive | 无状态 |
+| 重传机制 | TCP 内置 | CoAP CON 模式 |
+| 观察模式 | 不支持 | 支持 (未来扩展) |
+
+#### 3.2.2 消息类型
 
 **从 IPAd 到 eIM:**
 - `initiateAuthenticationRequest` - 发起认证
@@ -201,7 +215,7 @@ ESIPA 是 IPAd 与 eIM 之间的通信协议，基于 HTTP/HTTPS，使用 ASN.1 
 - `provideEimPackageResult` - eIM 包结果
 - `euiccPackageRequest` - eUICC 包请求
 
-#### 3.2.2 认证流程
+#### 3.2.3 认证流程
 
 ```
 IPAd                          eIM
@@ -218,6 +232,21 @@ IPAd                          eIM
  │                             │
  │◀─────── BPP / Error ────────│
 ```
+
+#### 3.2.4 CoAP 实现细节
+
+CoAP 方式使用 POST 方法发送 ASN.1 编码的 ESIPA 消息：
+
+```
+POST /gsma/rsp2/asn1
+Content-Format: application/x-gsma-rsp-asn1 (65535)
+[ASN.1 encoded ESIPA message]
+```
+
+**资源优化效果:**
+- RAM 减少：~4KB (相比 libcurl)
+- Flash 减少：~50KB (静态链接时)
+- 网络开销：减少 80% 头部数据
 
 ### 3.3 eUICC 接口层 (euicc.c, es10x.c)
 
@@ -369,18 +398,30 @@ API (ipa_poll) ──────► 返回轮询码给调用者
 
 ### 6.1 当前依赖
 
-| 依赖 | 用途 | 可选项 |
-|------|------|--------|
-| libcurl | HTTPS 通信 | 是（需替换） |
-| libpcsclite | 智能卡访问 | 是（需替换） |
-| asn1c | ASN.1 编解码 | 否（已生成代码） |
-| C99 标准库 | 基础功能 | 否 |
+| 依赖 | 用途 | 可选项 | 备注 |
+|------|------|--------|------|
+| libcurl | HTTPS 通信 | 是（需替换） | 资源占用高 |
+| libcoap | CoAP 通信 | 是（新增） | 资源占用低，SGP.32 v1.2+推荐 |
+| libpcsclite | 智能卡访问 | 是（需替换） | Linux 平台专用 |
+| asn1c | ASN.1 编解码 | 否（已生成代码） | 静态代码无运行时依赖 |
+| C99 标准库 | 基础功能 | 否 | - |
 
 ### 6.2 依赖优化方向
 
 1. **HTTP 层抽象**: 提供更轻量的 HTTP 客户端接口
-2. **智能卡层抽象**: 支持多种智能卡访问方式
-3. **ASN.1 优化**: 减少生成代码的内存占用
+2. **CoAP 支持**: 新增 libcoap 集成，降低资源占用
+3. **智能卡层抽象**: 支持多种智能卡访问方式
+4. **ASN.1 优化**: 减少生成代码的内存占用
+
+### 6.3 通讯方式实现状态
+
+| 通讯方式 | 规范版本 | 实现状态 | 说明 |
+|----------|----------|----------|------|
+| HTTP/HTTPS | SGP.32 v1.0+ | ✅ 已完成 | 基于 libcurl |
+| CoAP/UDP | SGP.32 v1.2+ | 🔄 部分完成 | 接口已定义，需集成 libcoap |
+| CoAP/DTLS | SGP.32 v1.2+ | 🔄 部分完成 | 接口已定义，需集成 libcoap |
+| CoAP/TCP | RFC 8323 | ⏳ 计划中 | 未来扩展 |
+| CoAP/TLS | RFC 8323 | ⏳ 计划中 | 未来扩展 |
 
 ## 7. 测试架构
 

@@ -48,6 +48,9 @@ struct ipa_context {
 	/*! sub-context of the smartcard connection towards the eUICC, */
 	void *scard_ctx;
 
+	/*! sub-context of the CoAP connection towards the eIM (alternative to HTTP), */
+	void *coap_ctx;
+
 	/*! cached eID (read from eUICC when ipa_init is called) */
 	uint8_t eid[IPA_LEN_EID];
 

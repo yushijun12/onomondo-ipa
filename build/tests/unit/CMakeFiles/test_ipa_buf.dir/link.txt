@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/test_ipa_buf.dir/test_ipa_buf.c.o -o test_ipa_buf  ../../src/ipa/libipa/liblibipa.a ../../src/ipa/libhttp.a ../../src/ipa/libscard.a -lpcsclite -lcurl ../../src/ipa/libasn/liblibasn.a 

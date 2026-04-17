@@ -28,12 +28,14 @@
 enum log_subsys {
 SMAIN,      /*!< 主程序模块 */
 SHTTP,      /*!< HTTP 通信模块 */
-SCARD,      /*!< 智能卡模块 */
+SCARD,      /*!< 智能卡模块 (同 SSCARD) */
+SSCARD = SCARD, /*!< 智能卡模块别名 (向后兼容) */
 SIPA,       /*!< IPAd 核心模块 */
 SES10X,     /*!< ES10x 接口模块 */
 SES10B,     /*!< ES10b 接口模块 */
 SEUICC,     /*!< eUICC 操作模块 */
 SESIPA,     /*!< ESIPA 协议模块 */
+SCOAP,      /*!< CoAP 通信模块 */
 _NUM_LOG_SUBSYS  /*!< 子系统数量（用于边界检查） */
 };
 
