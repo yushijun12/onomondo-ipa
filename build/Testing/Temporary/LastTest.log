@@ -1,0 +1,136 @@
+Start testing: Apr 17 09:04 UTC
+----------------------------------------------------------
+1/8 Testing: activation_code_test
+1/8 Test: activation_code_test
+Command: "/usr/bin/sh" "-c" "/workspace/build/tests/activation_code/activation_code_test > activation_code_test.out 2> activation_code_test.err"
+Directory: /workspace/build/tests/activation_code
+"activation_code_test" start time: Apr 17 09:04 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"activation_code_test" end time: Apr 17 09:04 UTC
+"activation_code_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/8 Testing: activation_code_compare_stdout
+2/8 Test: activation_code_compare_stdout
+Command: "/usr/bin/cmake" "-E" "compare_files" "/workspace/build/tests/activation_code/activation_code_test.out" "/workspace/tests/activation_code/activation_code_test.ok"
+Directory: /workspace/build/tests/activation_code
+"activation_code_compare_stdout" start time: Apr 17 09:04 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"activation_code_compare_stdout" end time: Apr 17 09:04 UTC
+"activation_code_compare_stdout" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/8 Testing: activation_code_compare_stderr
+3/8 Test: activation_code_compare_stderr
+Command: "/usr/bin/cmake" "-E" "compare_files" "/workspace/build/tests/activation_code/activation_code_test.err" "/workspace/tests/activation_code/activation_code_test.err"
+Directory: /workspace/build/tests/activation_code
+"activation_code_compare_stderr" start time: Apr 17 09:04 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"activation_code_compare_stderr" end time: Apr 17 09:04 UTC
+"activation_code_compare_stderr" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/8 Testing: utils_test
+4/8 Test: utils_test
+Command: "/usr/bin/sh" "-c" "/workspace/build/tests/utils/utils_test"
+Directory: /workspace/build/tests/utils
+"utils_test" start time: Apr 17 09:04 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"utils_test" end time: Apr 17 09:04 UTC
+"utils_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/8 Testing: bpp_segments_test
+5/8 Test: bpp_segments_test
+Command: "/usr/bin/sh" "-c" "/workspace/build/tests/bpp_segments/bpp_segments_test ../../../tests/bpp_segments/bpp.ber > bpp_segments_test.out 2> bpp_segments_test.err"
+Directory: /workspace/build/tests/bpp_segments
+"bpp_segments_test" start time: Apr 17 09:04 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"bpp_segments_test" end time: Apr 17 09:04 UTC
+"bpp_segments_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/8 Testing: bpp_segments_compare_stdout
+6/8 Test: bpp_segments_compare_stdout
+Command: "/usr/bin/cmake" "-E" "compare_files" "/workspace/build/tests/bpp_segments/bpp_segments_test.out" "/workspace/tests/bpp_segments/bpp_segments_test.ok"
+Directory: /workspace/build/tests/bpp_segments
+"bpp_segments_compare_stdout" start time: Apr 17 09:04 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"bpp_segments_compare_stdout" end time: Apr 17 09:04 UTC
+"bpp_segments_compare_stdout" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/8 Testing: bpp_segments_compare_stderr
+7/8 Test: bpp_segments_compare_stderr
+Command: "/usr/bin/cmake" "-E" "compare_files" "/workspace/build/tests/bpp_segments/bpp_segments_test.err" "/workspace/tests/bpp_segments/bpp_segments_test.err"
+Directory: /workspace/build/tests/bpp_segments
+"bpp_segments_compare_stderr" start time: Apr 17 09:04 UTC
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"bpp_segments_compare_stderr" end time: Apr 17 09:04 UTC
+"bpp_segments_compare_stderr" time elapsed: 00:00:00
+----------------------------------------------------------
+
+8/8 Testing: test_ipa_buf
+8/8 Test: test_ipa_buf
+Command: "/workspace/build/tests/unit/test_ipa_buf"
+Directory: /workspace/build/tests/unit
+"test_ipa_buf" start time: Apr 17 09:04 UTC
+Output:
+----------------------------------------------------------
+=== IPA Buffer Unit Tests ===
+
+Running test_buf_alloc_empty... PASSED
+Running test_buf_alloc_with_size... PASSED
+Running test_buf_alloc_data... PASSED
+Running test_buf_realloc_grow... PASSED
+Running test_buf_realloc_shrink... PASSED
+Running test_buf_serialize_deserialize... PASSED
+Running test_buf_multiple_operations... PASSED
+Running test_buf_dup... PASSED
+Running test_buf_copy... PASSED
+
+=== Results: 9/9 tests passed ===
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"test_ipa_buf" end time: Apr 17 09:04 UTC
+"test_ipa_buf" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Apr 17 09:04 UTC
