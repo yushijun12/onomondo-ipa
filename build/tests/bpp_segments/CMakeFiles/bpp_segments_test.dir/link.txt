@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/bpp_segments_test.dir/bpp_segments_test.c.o -o bpp_segments_test  ../../src/ipa/libipa/liblibipa.a ../../src/ipa/libasn/liblibasn.a 

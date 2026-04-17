@@ -4,6 +4,14 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+/**
+ * @file utils.h
+ * @brief 工具函数和缓冲区管理
+ * 
+ * 本文件定义了 IPAd 的工具函数、缓冲区管理结构和相关操作接口。
+ * ipa_buf 是 IPAd 中用于数据交换的核心数据结构。
+ */
+
 #pragma once
 
 #include <assert.h>
@@ -12,211 +20,323 @@
 #include "mem.h"
 #include "log.h"
 
-/*! Get the size of an array in elements.
- *  \param[in] array array reference. */
+/** @defgroup UTILS 工具模块
+ *  @{
+ */
+
+/**
+ * @brief 获取数组元素数量
+ * 
+ * 编译时计算数组的元素个数。
+ * 
+ * @param x 数组名
+ * @return 数组元素数量
+ */
 #define IPA_ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
-/*! Allocate memory for an object, ensure that the allocation was successful and that the memory is initialized.
- *  \param[in] obj description of the object to allocated (struct).
- *  \returns dynamically allocated memory of the object size. */
+/**
+ * @brief 分配并零初始化对象内存
+ * 
+ * 为指定类型的对象分配内存，确保分配成功并初始化为零。
+ * 
+ * @param obj 要分配的对象类型（struct）
+ * @return 指向已分配内存的指针（已断言检查非 NULL）
+ */
 #define IPA_ALLOC_ZERO(obj) ({ \
-	obj *__ptr; \
-	__ptr = IPA_ALLOC(obj); \
-	assert(__ptr); \
-	memset(__ptr, 0, sizeof(*__ptr)); \
-	__ptr; \
+obj *__ptr; \
+__ptr = IPA_ALLOC(obj); \
+assert(__ptr); \
+memset(__ptr, 0, sizeof(*__ptr)); \
+__ptr; \
 })
 
-/*! Allocate N bytes of memory, ensure that the allocation was successful and that the memory is initialized.
- *  \param[in] n number of bytes to allocate.
- *  \returns N bytes of dynamically allocated memory. */
+/**
+ * @brief 分配 N 字节并零初始化
+ * 
+ * 分配指定数量的字节并确保内存初始化为零。
+ * 
+ * @param n 要分配的字节数
+ * @return 指向已分配内存的指针（已断言检查非 NULL）
+ */
 #define IPA_ALLOC_N_ZERO(n) ({ \
-	void *__ptr; \
-	__ptr = IPA_ALLOC_N(n); \
-	assert(__ptr); \
-	memset(__ptr, 0, n); \
-	__ptr; \
+void *__ptr; \
+__ptr = IPA_ALLOC_N(n); \
+assert(__ptr); \
+memset(__ptr, 0, n); \
+__ptr; \
 })
 
+/**
+ * @brief 将二进制数据转换为十六进制字符串
+ * 
+ * @param data 输入二进制数据
+ * @param len 数据长度
+ * @return 十六进制字符串（调用者负责释放）
+ */
 char *ipa_hexdump(const uint8_t *data, size_t len);
 
+/**
+ * @brief 缓冲区结构
+ * 
+ * IPAd 中用于数据交换的核心结构。包含数据指针、总长度和有效数据长度。
+ * 采用灵活内存布局：header + data 连续存储。
+ */
 struct ipa_buf {
-	/*! pointer to allocated memory */
-	uint8_t *data;
-
-	/*! actual length of the allocated memory. This parameter is set when
-	 * the buffer is allocated and must not be modified by the API user. */
-	size_t data_len;
-
-	/*! length of useful data. This value may be modified by the API user,
-	 * it is used to tell how many bytes with useful data are stored. */
-	size_t len;
+uint8_t *data;        /*!< 指向已分配内存的指针 */
+size_t data_len;      /*!< 已分配内存的实际长度（由系统设置，用户不应修改） */
+size_t len;           /*!< 有效数据长度（用户可修改） */
 };
 
-/*! Generate a hexdump string from an ipa_buf object.
- *  \param[in] buf pointer to ipa_buf object.
- *  \returns pointer to generated human readable string. */
+/**
+ * @brief 生成 ipa_buf 的十六进制转储字符串
+ * 
+ * @param buf ipa_buf 对象指针
+ * @return 人类可读的十六进制字符串，NULL 时返回 "(null)"
+ */
 static inline char *ipa_buf_hexdump(const struct ipa_buf *buf)
 {
-	if (!buf)
-		return "(null)";
-	return ipa_hexdump(buf->data, buf->len);
+if (!buf)
+return "(null)";
+return ipa_hexdump(buf->data, buf->len);
 }
 
+/**
+ * @brief 多行十六进制转储（原始数据）
+ * 
+ * @param data 输入数据
+ * @param len 数据长度
+ * @param width 每行显示的字节数
+ * @param indent 缩进空格数
+ * @param log_subsys 日志子系统
+ * @param log_level 日志级别
+ */
 void ipa_hexdump_multiline(const uint8_t *data, size_t len, size_t width, uint8_t indent, enum log_subsys log_subsys,
-			   enum log_level log_level);
-void ipa_buf_hexdump_multiline(const struct ipa_buf *buf, size_t width, uint8_t indent, enum log_subsys log_subsys,
-			       enum log_level log_level);
+   enum log_level log_level);
 
-/*! Allocate a new ipa_buf object.
- *  \param[in] len number of bytes to allocate inside ipa_buf.
- *  \returns pointer to newly allocated ipa_buf object. */
+/**
+ * @brief 多行十六进制转储（ipa_buf）
+ * 
+ * @param buf ipa_buf 对象
+ * @param width 每行显示的字节数
+ * @param indent 缩进空格数
+ * @param log_subsys 日志子系统
+ * @param log_level 日志级别
+ */
+void ipa_buf_hexdump_multiline(const struct ipa_buf *buf, size_t width, uint8_t indent, enum log_subsys log_subsys,
+       enum log_level log_level);
+
+/**
+ * @brief 分配新的 ipa_buf
+ * 
+ * 分配一个新的缓冲区对象，包含 header 和数据区。
+ * 新缓冲区的 len 初始化为 0。
+ * 
+ * @param len 数据区字节数
+ * @return 指向新 ipa_buf 的指针（已断言检查非 NULL）
+ */
 static inline struct ipa_buf *ipa_buf_alloc(size_t len)
 {
-	struct ipa_buf *buf = IPA_ALLOC_N(sizeof(*buf) + len);
-	assert(buf);
+struct ipa_buf *buf = IPA_ALLOC_N(sizeof(*buf) + len);
+assert(buf);
 
-	memset(buf, 0, sizeof(*buf));
-	buf->data = (uint8_t *) buf + sizeof(*buf);
-	buf->data_len = len;
+memset(buf, 0, sizeof(*buf));
+buf->data = (uint8_t *) buf + sizeof(*buf);
+buf->data_len = len;
 
-	/* A newly allocated ipa_buf naturally has 0 bytes of
-	 * useful data in it. */
-	buf->len = 0;
+/* 新分配的 ipa_buf 自然有 0 字节的有效数据 */
+buf->len = 0;
 
-	return buf;
+return buf;
 }
 
-/*! Reallocate/Resize an existing ipa_buf object.
- *  \param[in] len new number of bytes to allocate inside ipa_buf.
- *  \returns pointer to newly allocated ipa_buf object. */
+/**
+ * @brief 重新分配 ipa_buf 大小
+ * 
+ * 调整现有缓冲区的大小，保留已有数据。
+ * 
+ * @param buf 要调整的缓冲区
+ * @param len 新的数据区字节数
+ * @return 指向重新分配的 ipa_buf 的指针（已断言检查非 NULL）
+ */
 static inline struct ipa_buf *ipa_buf_realloc(struct ipa_buf *buf, size_t len)
 {
-	buf = IPA_REALLOC(buf, sizeof(*buf) + len);
-	assert(buf);
+buf = IPA_REALLOC(buf, sizeof(*buf) + len);
+assert(buf);
 
-	buf->data = (uint8_t *) buf + sizeof(*buf);
-	buf->data_len = len;
-	memset(buf->data + buf->len, 0, len - buf->len);
+buf->data = (uint8_t *) buf + sizeof(*buf);
+buf->data_len = len;
+memset(buf->data + buf->len, 0, len - buf->len);
 
-	return buf;
+return buf;
 }
 
-/*! Create a statically allocated ipa_buf object (do not use with ipa_buf_free or ipa_buf_realloc!).
- *  \param[in] name symbol name of the ipa_buf.
- *  \returns size size of the ipa_buf object. */
+/**
+ * @brief 静态分配 ipa_buf 宏
+ * 
+ * 创建静态分配的 ipa_buf 对象（不能使用 ipa_buf_free 或 ipa_buf_realloc）。
+ * 
+ * @param name ipa_buf 的符号名
+ * @param size ipa_buf 的大小
+ */
 #define IPA_BUF_STATIC(name, size) \
-	uint8_t __name_buf[size]; \
-	struct ipa_buf name = { __name_buf, size, 0 };
+uint8_t __name_buf[size]; \
+struct ipa_buf name = { __name_buf, size, 0 };
 
-/*! Allocate a new ipa_buf object and initialize it with data.
- *  \param[in] len number of bytes to allocate inside ipa_buf.
- *  \param[in] data to copy into the newly allocated ipa_buf.
- *  \returns pointer to newly allocated ipa_buf object. */
+/**
+ * @brief 分配 ipa_buf 并用数据初始化
+ * 
+ * @param len 数据区字节数
+ * @param data 要复制的数据
+ * @return 指向新 ipa_buf 的指针（已断言检查非 NULL）
+ */
 static inline struct ipa_buf *ipa_buf_alloc_data(size_t len, uint8_t *data)
 {
-	struct ipa_buf *buf = ipa_buf_alloc(len);
-	assert(buf);
+struct ipa_buf *buf = ipa_buf_alloc(len);
+assert(buf);
 
-	buf->len = len;
-	memcpy(buf->data, data, len);
+buf->len = len;
+memcpy(buf->data, data, len);
 
-	return buf;
+return buf;
 }
 
-/*! Duplicate (exact copy) from another ipa_buf object.
- *  \param[in] buf ipa_buf object to duplicate.
- *  \returns pointer to newly allocated ipa_buf object. */
+/**
+ * @brief 复制 ipa_buf（完整副本）
+ * 
+ * 创建另一个 ipa_buf 对象的精确副本（包括未使用的空间）。
+ * 
+ * @param buf 要复制的 ipa_buf 对象
+ * @return 指向新 ipa_buf 的指针
+ */
 static inline struct ipa_buf *ipa_buf_dup(const struct ipa_buf *buf)
 {
-	struct ipa_buf *buf_dup = ipa_buf_alloc(buf->data_len);
-	memcpy(buf_dup->data, buf->data, buf->data_len);
-	buf_dup->len = buf->len;
-	return buf_dup;
+struct ipa_buf *buf_dup = ipa_buf_alloc(buf->data_len);
+memcpy(buf_dup->data, buf->data, buf->data_len);
+buf_dup->len = buf->len;
+return buf_dup;
 }
 
-/*! Allocate a new ipa_buf and copy the data from another ipa_buf object.
- *  \param[in] buf ipa_buf object to copy from.
- *  \returns pointer to newly allocated ipa_buf object. */
+/**
+ * @brief 复制 ipa_buf（仅有效数据）
+ * 
+ * 创建另一个 ipa_buf 对象的副本，仅复制有效数据部分。
+ * 
+ * @param buf 要复制的 ipa_buf 对象
+ * @return 指向新 ipa_buf 的指针
+ */
 static inline struct ipa_buf *ipa_buf_copy(const struct ipa_buf *buf)
 {
-	struct ipa_buf *buf_dup = ipa_buf_alloc(buf->len);
-	memcpy(buf_dup->data, buf->data, buf->len);
-	buf_dup->len = buf->len;
-	return buf_dup;
+struct ipa_buf *buf_dup = ipa_buf_alloc(buf->len);
+memcpy(buf_dup->data, buf->data, buf->len);
+buf_dup->len = buf->len;
+return buf_dup;
 }
 
-/*! Allocate a new ipa_buf and copy from user provided memory.
- *  \param[in] in user provided memory to copy.
- *  \param[in] len amount of bytes to copy from user provided memory.
- *  \returns pointer to newly allocated ss_buf object. */
+/**
+ * @brief 从用户内存分配并复制
+ * 
+ * 从用户提供的内存分配新的 ipa_buf 并复制数据。
+ * 
+ * @param in 用户提供的内存
+ * @param len 要复制的字节数
+ * @return 指向新 ipa_buf 的指针
+ */
 static inline struct ipa_buf *ipa_buf_alloc_and_cpy(const uint8_t *in, size_t len)
 {
-	struct ipa_buf *buf = ipa_buf_alloc(len);
-	memcpy(buf->data, in, len);
-	buf->len = len;
-	return buf;
+struct ipa_buf *buf = ipa_buf_alloc(len);
+memcpy(buf->data, in, len);
+buf->len = len;
+return buf;
 }
 
-/*! Allocate a new ipa_buf and copy from user provided memory.
- *  \param[in] buf ipa_buf where the data should be copied (appended) to.
- *  \param[in] in user provided memory to copy.
- *  \param[in] len amount of bytes to copy from user provided memory. */
+/**
+ * @brief 追加数据到 ipa_buf
+ * 
+ * 将数据追加到现有缓冲区的末尾。
+ * 
+ * @param buf 目标 ipa_buf
+ * @param in 要复制的用户内存
+ * @param len 要复制的字节数
+ */
 static inline void ipa_buf_cpy(struct ipa_buf *buf, const uint8_t *in, size_t len)
 {
-	assert(buf->len + len <= buf->data_len);
-	memcpy(buf->data + buf->len, in, len);
-	buf->len += len;
+assert(buf->len + len <= buf->data_len);
+memcpy(buf->data + buf->len, in, len);
+buf->len += len;
 }
 
-/*! Assign data from a different location to an uninitialized ipa_buf struct.
- *  \param[in] buf uninitialized ipa_buf (possibly statically allocated).
- *  \param[in] data user provided memory to assign to the ipa_buf.
- *  \param[in] len length of the user provided memory to assign. */
+/**
+ * @brief 赋值外部内存到 ipa_buf
+ * 
+ * 将已存在的内存区域赋值给未初始化的 ipa_buf 结构。
+ * 注意：结果 ipa_buf 不能用 ipa_buf_free() 释放。
+ * 
+ * @param buf 未初始化的 ipa_buf（可能是静态分配的）
+ * @param data 要赋值给用户提供的内存
+ * @param len 用户提供的内存长度
+ */
 static inline void ipa_buf_assign(struct ipa_buf *buf, const uint8_t *data, size_t len)
 {
-	/*! The purpose of this function is to provide an easy way to assign
-	 *  already existing memory locations to an ipa_buf struct. The result
-	 *  is a valid ipa_buf struct, however it must not be freed using
-	 *  ipa_buf_free(). */
-	memset(buf, 0, sizeof(*buf));
-	buf->data = (uint8_t *) data;
-	buf->data_len = len;
-	buf->len = len;
+/*! 此函数的目的是提供一种简单的方式将已存在的内存位置
+ *  赋值给 ipa_buf 结构。结果是有效的 ipa_buf 结构，但不能
+ *  使用 ipa_buf_free() 释放。 */
+memset(buf, 0, sizeof(*buf));
+buf->data = (uint8_t *) data;
+buf->data_len = len;
+buf->len = len;
 }
 
-/*! Deserialize ipa_buf from a buffer (data may come from a file or similar).
- *  \param[in] data user provided memory with serialized ipa_buf.
- *  \param[in] len length of the user provided memory that contains the serialied ipa_buf. */
+/**
+ * @brief 反序列化 ipa_buf
+ * 
+ * 从二进制数据（可能来自文件）反序列化 ipa_buf。
+ * 
+ * @param data 包含序列化 ipa_buf 的用户内存
+ * @param len 包含序列化 ipa_buf 的用户内存长度
+ * @return 反序列化的 ipa_buf 指针
+ */
 static inline struct ipa_buf *ipa_buf_deserialize(uint8_t *data, size_t len)
 {
-	/*! An ipa_buf is serialized by writing its header to a file and append its data section directly after. Since
-	 *  ipa_buf_alloc already allocates an ipa_buf object this way no extra effort has to be taken. It is
-	 *  sufficient to pass the pointer to the ipa_buf object to memcpy and use sizeof(*buf) + buf->data_len as
-	 *  length. */
+/*! ipa_buf 通过将其头部写入文件并在其后直接附加数据区来序列化。
+ *  由于 ipa_buf_alloc 已经以这种方式分配 ipa_buf 对象，因此无需额外操作。
+ *  只需将指向 ipa_buf 对象的指针传递给 memcpy，并使用 sizeof(*buf) + buf->data_len
+ *  作为长度即可。 */
 
-	struct ipa_buf *buf_serialized;
-	struct ipa_buf *buf;
+struct ipa_buf *buf_serialized;
+struct ipa_buf *buf;
 
-	/* This will give us an almost working ipa_buf (the data pointer will be stale) */
-	buf_serialized = (struct ipa_buf *)data;
+/* 这将给我们一个几乎可用的 ipa_buf（数据指针将失效） */
+buf_serialized = (struct ipa_buf *)data;
 
-	/* First we allocate a new buffer from the data in the serialzed buffer. We cannot trust the data pointer since
-	 * this serialzed buffer may have come from a different process on a different machine, so we must calculate
-	 * the beginning of the data ourselves. We also must be suere to copy the complete memory. */
-	buf = ipa_buf_alloc_data(buf_serialized->data_len, (uint8_t *) buf_serialized + sizeof(*buf_serialized));
+/* 首先我们从序列化缓冲区中的数据分配一个新缓冲区。我们不能信任数据指针，因为
+ * 这个序列化缓冲区可能来自不同机器上的不同进程，所以我们必须自己计算数据的开始位置。
+ * 我们还必须确保复制完整的内存。 */
+buf = ipa_buf_alloc_data(buf_serialized->data_len, (uint8_t *) buf_serialized + sizeof(*buf_serialized));
 
-	/* The original buffer may not have utilized all the available memory, so we restore the length. */
-	buf->len = buf_serialized->len;
+/* 原始缓冲区可能没有利用所有可用内存，所以我们恢复长度。 */
+buf->len = buf_serialized->len;
 
-	return buf;
+return buf;
 }
 
-/*! Free an ipa_buf object.
- *  \param[in] pointer to ipa_buf object to free. */
+/**
+ * @brief 释放 ipa_buf
+ * 
+ * @param buf 要释放的 ipa_buf 指针
+ */
 static inline void ipa_buf_free(struct ipa_buf *buf)
 {
-	IPA_FREE(buf);
+IPA_FREE(buf);
 }
 
+/**
+ * @brief 从十六进制字符串转换为二进制
+ * 
+ * @param binary 输出二进制缓冲区
+ * @param binary_len 二进制缓冲区长度
+ * @param hexstr 输入十六进制字符串
+ * @return 转换的二进制字节数
+ */
 size_t ipa_binary_from_hexstr(uint8_t *binary, size_t binary_len, const char *hexstr);
+
+/** @} */  /* 结束 UTILS 模块组 */

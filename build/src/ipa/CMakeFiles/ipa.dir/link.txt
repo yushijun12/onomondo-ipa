@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/ipa.dir/main.c.o -o ipa  libipa/liblibipa.a libhttp.a libscard.a -lpcsclite -lcurl libasn/liblibasn.a 

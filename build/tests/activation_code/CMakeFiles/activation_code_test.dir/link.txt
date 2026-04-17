@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/activation_code_test.dir/activation_code_test.c.o -o activation_code_test  ../../src/ipa/libipa/liblibipa.a ../../src/ipa/libasn/liblibasn.a 

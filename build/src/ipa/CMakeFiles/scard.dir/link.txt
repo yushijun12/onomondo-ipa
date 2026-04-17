@@ -1,0 +1,2 @@
+/usr/bin/ar qc libscard.a CMakeFiles/scard.dir/scard.c.o
+/usr/bin/ranlib libscard.a

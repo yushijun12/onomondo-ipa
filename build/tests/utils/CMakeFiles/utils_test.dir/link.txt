@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/utils_test.dir/utils_test.c.o -o utils_test  ../../src/ipa/libipa/liblibipa.a ../../src/ipa/libasn/liblibasn.a 
