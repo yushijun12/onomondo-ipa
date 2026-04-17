@@ -52,7 +52,8 @@ TEST(test_buf_alloc_with_size)
 {
     struct ipa_buf *buf = ipa_buf_alloc(100);
     ASSERT_NOTNULL(buf);
-    ASSERT_EQ(buf->len, 100);
+    /* 新分配的缓冲区 len=0 (无有效数据), data_len=100 (总容量) */
+    ASSERT_EQ(buf->len, 0);
     ASSERT_EQ(buf->data_len, 100);
     ipa_buf_free(buf);
 }
@@ -76,11 +77,14 @@ TEST(test_buf_realloc_grow)
     ASSERT_NOTNULL(buf);
     
     buf->data[0] = 0x42;
-    buf->data_len = 1;
+    buf->len = 1;  /* 设置有效数据长度 */
+    buf->data_len = 10;
     
     buf = ipa_buf_realloc(buf, 100);
     ASSERT_NOTNULL(buf);
-    ASSERT_EQ(buf->len, 100);
+    /* realloc 后 data_len 变为新大小，但 len 保持原有效数据长度 */
+    ASSERT_EQ(buf->len, 1);
+    ASSERT_EQ(buf->data_len, 100);
     ASSERT_EQ(buf->data[0], 0x42);
     
     ipa_buf_free(buf);
@@ -91,9 +95,16 @@ TEST(test_buf_realloc_shrink)
     struct ipa_buf *buf = ipa_buf_alloc(100);
     ASSERT_NOTNULL(buf);
     
+    /* 设置一些初始数据 */
+    buf->len = 5;
+    buf->data[0] = 0xAA;
+    
     buf = ipa_buf_realloc(buf, 10);
     ASSERT_NOTNULL(buf);
-    ASSERT_EQ(buf->len, 10);
+    /* realloc shrink 后 data_len 变小，len 保持不变 (但不超过新容量) */
+    ASSERT_EQ(buf->len, 5);
+    ASSERT_EQ(buf->data_len, 10);
+    ASSERT_EQ(buf->data[0], 0xAA);
     
     ipa_buf_free(buf);
 }

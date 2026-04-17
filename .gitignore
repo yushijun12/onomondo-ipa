@@ -1,44 +1,39 @@
 ```
-# Build artifacts
+# CMake build artifacts
 build/
-cmake-build-*/
-
-# CMake files
 CMakeCache.txt
 CMakeFiles/
-CMakeScripts/
-
-# Compiler output
-*.o
-*.obj
-*.a
-*.lib
-*.so
-*.dylib
-*.dll
-
-# Executables
-*.exe
-
-# Test files
+cmake_install.cmake
+Makefile
 CTestTestfile.cmake
 DartConfiguration.tcl
 
-# Temporary files
+# Compiled objects and executables
+*.o
+*.obj
+*.out
+*.exe
+*.dll
+*.so
+*.a
+
+# Test executables
+build/tests/*/activation_code_test
+build/tests/*/bpp_segments_test
+build/tests/*/test_ipa_buf
+build/tests/*/utils_test
+
+# Temporary and log files
 *.tmp
+*.log
 *.swp
 *.swo
 
-# Logs
-*.log
-
-# IDE files
+# IDE and editor files
 .vscode/
 .idea/
-*.swp
-*.swo
 
-# OS files
+# OS specific files
 .DS_Store
 Thumbs.db
 
@@ -46,6 +41,28 @@ Thumbs.db
 coverage/
 htmlcov/
 
-# Original rule preserved
-*.log
+# Compressed archives
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
+
 ```
